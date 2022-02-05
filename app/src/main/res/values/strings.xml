@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Subreddit2Playlist</string>
+    <string name="enter_subreddit_name">Enter Subreddit Name</string>
+    <string name="enter_subreddit">Enter subreddit</string>
+    <string name="subreddit_name">videos</string>
+    <string name="generate_playlist">Generate Playlist</string>
+    <!--    <string name=""-->
 </resources>
