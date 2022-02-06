@@ -1,28 +1,39 @@
 package com.example.subreddit2playlist
 
 //import android.net.wifi.hotspot2.pps.Credential
+//import com.google.api.client.http.HttpTransport
+//import com.google.api.client.googleapis.json.GoogleJsonResponseException
+//import com.google.api.client.json.JsonFactory
+//import com.google.api.client.json.gson
+//import com.google.api.client.json.jackson2.JacksonFactory
+//import java.io.File
+
+import android.R
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+//import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-//import com.google.api.client.http.HttpTransport
-//import com.google.api.client.googleapis.json.GoogleJsonResponseException
+import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
-//import com.google.api.client.json.JsonFactory
-//import com.google.api.client.json.gson
 import com.google.api.client.json.gson.GsonFactory
-//import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.Playlist
 import com.google.api.services.youtube.model.PlaylistSnippet
 import com.google.api.services.youtube.model.PlaylistStatus
-//import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.security.GeneralSecurityException
+import java.util.*
+import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential
+
+
 //import java.util.*
 
 class GetPlaylist {
@@ -42,12 +53,7 @@ class GetPlaylist {
     private fun authorize(httpTransport: NetHttpTransport?): Credential? {
         println("DDDD start authorize")
         // Load client secrets
-//        val inFile = File(clientSecrets)
-//        if (!inFile.canRead()) {
-//            println("DDDD unable to read json file")
-//            return null
-//        }
-//        val inputStream = File(clientSecrets).inputStream()
+        /*
         val inputStream: InputStream? = GetPlaylist::class.java.getResourceAsStream(clientSecretsFile)
         if (inputStream == null) {
             println("DDDD failed to get inputstream")
@@ -66,20 +72,25 @@ class GetPlaylist {
             scopes
         ).build()
         println("DDDD end authorize")
-        return AuthorizationCodeInstalledApp(flow, LocalServerReceiver()).authorize("user")
+        val receiver = LocalServerReceiver.Builder().setPort(-1).build()
+        println("DDDD receiver is ${receiver.toString()}")
+        return AuthorizationCodeInstalledApp(flow, receiver).authorize("benjamin.sissons@gmail.com")
 
+         */
 
-        // Load client secrets.
-        // Load client secrets.
-//        val `in`: InputStream = MainActivity::class.java.getResourceAsStream(clientSecrets)
-//        val clientSecrets =
-//            GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
-//        // Build flow and trigger user authorization request.
-//        // Build flow and trigger user authorization request.
-//        val flow =
-//            GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
-//                .build()
-//        return AuthorizationCodeInstalledApp(flow, LocalServerReceiver()).authorize("user")
+        //val credential = GoogleCredential().setAccessToken()
+        val credential: AppIdentityCredential = AppIdentityCredential(scopes)
+
+/*
+        val mCredential = GoogleAccountCredential.usingOAuth2(
+            getApplicationContext(),
+            scopes
+        ).setBackOff(ExponentialBackOff())
+        //val httpTransport: HttpTransport = AndroidHttp.newCompatibleTransport()
+        val mService = YouTube.Builder(
+            httpTransport, myJSonFactory, mCredential
+        ).setApplicationName(applicationName).build()
+ */
     }
 
     /**
