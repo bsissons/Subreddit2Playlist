@@ -7,7 +7,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer
+//import com.google.api.client.http.HttpTransport
 //import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.javanet.NetHttpTransport
 //import com.google.api.client.json.JsonFactory
@@ -18,7 +18,7 @@ import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.Playlist
 import com.google.api.services.youtube.model.PlaylistSnippet
 import com.google.api.services.youtube.model.PlaylistStatus
-import java.io.File
+//import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -26,7 +26,7 @@ import java.security.GeneralSecurityException
 //import java.util.*
 
 class GetPlaylist {
-    private val clientSecrets = "client_secret_370011342416-h6gcrnh0r5sr0a41dg6i2650rkvc9vql.apps.googleusercontent.com.json"
+    private val clientSecretsFile = "/client_secret.json"
     private val scopes: Collection<String> =
         listOf("https://www.googleapis.com/auth/youtube.force-ssl")
     private val applicationName = "subreddit2playlist"
@@ -39,11 +39,21 @@ class GetPlaylist {
      * @throws IOException
      */
     //@Throws(IOException::class)
-    private fun authorize(httpTransport: NetHttpTransport?): Credential {
+    private fun authorize(httpTransport: NetHttpTransport?): Credential? {
         println("DDDD start authorize")
         // Load client secrets
-        val inputStream = File(clientSecrets).inputStream()
-        //if (inputStream.available())
+//        val inFile = File(clientSecrets)
+//        if (!inFile.canRead()) {
+//            println("DDDD unable to read json file")
+//            return null
+//        }
+//        val inputStream = File(clientSecrets).inputStream()
+        val inputStream: InputStream? = GetPlaylist::class.java.getResourceAsStream(clientSecretsFile)
+        if (inputStream == null) {
+            println("DDDD failed to get inputstream")
+            return null
+        }
+
         println("DDDD got the resource stream")
         val clientSecrets = GoogleClientSecrets.load(myJSonFactory, InputStreamReader(inputStream))
 
@@ -57,6 +67,19 @@ class GetPlaylist {
         ).build()
         println("DDDD end authorize")
         return AuthorizationCodeInstalledApp(flow, LocalServerReceiver()).authorize("user")
+
+
+        // Load client secrets.
+        // Load client secrets.
+//        val `in`: InputStream = MainActivity::class.java.getResourceAsStream(clientSecrets)
+//        val clientSecrets =
+//            GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
+//        // Build flow and trigger user authorization request.
+//        // Build flow and trigger user authorization request.
+//        val flow =
+//            GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
+//                .build()
+//        return AuthorizationCodeInstalledApp(flow, LocalServerReceiver()).authorize("user")
     }
 
     /**
@@ -71,9 +94,10 @@ class GetPlaylist {
         IOException::class
     )
     */
-    private fun getService() : YouTube {
+    private fun getService() : YouTube? {
+        println("DDDD getService")
         val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
-        val credential = authorize(httpTransport)
+        val credential : Credential = authorize(httpTransport) ?: return null
         return YouTube.Builder(httpTransport, myJSonFactory, credential)
             .setApplicationName(applicationName)
             .build()
@@ -99,9 +123,9 @@ class GetPlaylist {
     )
     @JvmStatic
      */
-    fun returnPlaylist() : Playlist {
+    fun returnPlaylist() : Playlist? {
         println("DDDD before getService")
-        val youtubeService: YouTube = getService()
+        val youtubeService: YouTube = getService() ?: return null
         println("DDDD after getService")
 
         // Define the Playlist object, which will be uploaded as the request body.
@@ -127,15 +151,15 @@ class GetPlaylist {
         // Define and execute the API request
         val part = mutableListOf("snippet", "status")
         println("DDDD before playlist request")
-        val request: YouTube.Playlists.Insert = youtubeService.playlists()
-            .insert(part, playlist)
-        val response: Playlist = request.execute()
+        val request: YouTube.Playlists.Insert? = youtubeService.playlists()
+            ?.insert(part, playlist)
+        val response: Playlist = request?.execute() ?: return null
         println("DDDD insert response")
         println(response)
 
         // Return the playlist that was inserted
         val listOfPlaylistRequest: YouTube.Playlists.List = youtubeService.playlists().list(part)
-        println("DDDD before plalist response")
+        println("DDDD before playlist response")
         val playlistResponse = listOfPlaylistRequest.execute()
         println("DDDD playlist response")
         println(playlistResponse)
